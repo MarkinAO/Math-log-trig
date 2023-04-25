@@ -8,24 +8,30 @@ export default class Character {
     this.type = type;
     this.health = 100;
     this.level = 1;
-    this.attack = null;
+    this.attackValue = null;
     this.defence = null;
+    this.stonedStatus = false;
   }
 
-  setStoned(status) {
-    this.stoned = status; // true || false
+  set stoned(status) {
+    this.stonedStatus = status; // true || false
   }
 
-  getStoned(distance, attack) {
-    if (this.stoned) {
-      return Math.floor(attack - Math.log2(distance) * 5);
-    }
-    return attack;
+  get stoned() {
+    return this.stonedStatus;
   }
 
-  getAttack(distance, status) {
-    this.setStoned(status);
-    const computedAttack = this.attack * (1 - 0.1 * (distance - 1));
-    return this.getStoned(distance, computedAttack);
+  set attack(value) {
+    this.attackValue = value;
+  }
+
+  get attack() {
+    return (distance) => {
+      let result = this.attackValue * (1 - 0.1 * (distance - 1));
+      if (this.stoned) {
+        result = Math.floor(result - Math.log2(distance) * 5);
+      }
+      return result;
+    };
   }
 }
